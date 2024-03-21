@@ -15,6 +15,35 @@
         {{ session('success') }}
     </div>
     @endif
+    {{--study materials area--}}
+
+    <div>
+        <div class="bg-gray-200 px-4 py-2 rounded-lg">
+            Add study materials       
+            </div>
+        <form method="POST" action="{{route('addMaterials')}}" class="  flex gap-10">
+            @csrf
+            <div class="mb-4">
+                <label for="subject_name" class="block text-sm font-medium text-gray-700">subject name</label>
+                <input type="text" id="subject_name" name="subject_name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter name">
+            </div>
+            <div>
+                <label for='class_stage' class=" block text-sm font-medium text-gray-700">class_stage</label>
+                <select id="class_stage" name="class_stage" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option>Primary education</option>
+                    <option>Secondary education</option>
+                    <option>high school</option>
+                </select>
+            </div>
+            <div class="mb-4 mt-4">
+                <input type="hidden" name="school_id" value="{{Auth::user()->school_id}}">
+                <button type="submit" class="inline-flex justify-center items-center w-32 h-12 shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Submit
+                </button>
+            </div>
+            
+        </form>
+    </div>
 {{--Teacher area--}}
 
     <div class="bg-gray-200 px-4 py-2 rounded-lg mt-10">
@@ -32,18 +61,14 @@
                 <input type="username" id="username" name="username" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter address">
             </div>
             <div class="mb-4">
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input type="password" id="password" name="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter email">
+                <input type="hidden" value='123456' id="password" name="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter email">
             </div>
             <div class="mb-4">
-                <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
-                <select id="role" name="role" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <option value="teacher">Teacher</option>
-                </select>
+                <input type="hidden" name="role" value="Teacher">
             </div>
             <div class="mb-4 mt-4">
                 <input type="hidden" name="school_id" value="{{Auth::user()->school_id}}">
-                <button type="submit" class="inline-flex justify-center  w-32 h-12 shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <button type="submit" class="inline-flex items-center justify-center  w-32 h-12 shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Submit
                 </button>
             </div>
@@ -51,7 +76,7 @@
 
     <div>
         <div class="bg-gray-200 px-4 py-2 rounded-lg">
-            Add user       
+             Teacher        
             </div>
         <form method="POST" action="{{route('updateSubject')}}" class="flex gap-10">
             @csrf
@@ -59,7 +84,7 @@
             <div class="mb-4">
                 <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
                 <select id="name" name="name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    @foreach($users as $user)
+                    @foreach($userm as $user)
                         <option value="{{ $user->name }}">{{ $user->name }}</option>
                     @endforeach
                 </select>
@@ -68,12 +93,20 @@
                 <label for="subject_name" class="block text-sm font-medium text-gray-700">Subject Name</label>
                 <select id="subject_name" name="subject_name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     @foreach($StudyMaterials as $StudyMaterial)
-                        <option value="{{ $StudyMaterial->subject_name }}">{{ $StudyMaterial->subject_name }}</option>
+                        <option value="{{ $StudyMaterial->subject_name }}">{{ $StudyMaterial->subject_name }}-{{ $StudyMaterial->class_stage }}</option>
                     @endforeach
                 </select>
             </div>
+            <div class="mb-4">
+                <label for="class_stage" class="block text-sm font-medium text-gray-700">class_stage</label>
+                    <select id="class_stage" name="class_stage" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <option value="Primary education">Primary education</option>
+                        <option value="Secondary education">Secondary education</option>
+                        <option value="high school">high school</option>
+                    </select>
+            </div>
             <div class="mb-4 mt-4">
-                <button type="submit" class="inline-flex justify-center  w-32 h-12 shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <button type="submit" class="inline-flex  items-center justify-center w-32 h-12 shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Submit
                 </button>
             </div> 
@@ -95,9 +128,9 @@
                 <input type="username" id="username" name="username" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter address">
             </div>
             <div class="mb-4">
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input type="password" id="password" name="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter email">
+                <input type="hidden" value='123456' id="password" name="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter email">
             </div>
+          
             <div class="mb-4">
                 <label for="class" class="block text-sm font-medium text-gray-700">Class</label>
                 <select id="class" name="class" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -109,7 +142,7 @@
             <div class="mb-4 mt-4">
                 <input type="hidden" name="role" value="Student">
                 <input type="hidden" name="school_id" value="{{Auth::user()->school_id}}">
-                <button type="submit" class="inline-flex justify-center  w-32 h-12 shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <button type="submit" class="inline-flex justify-center items-center w-32 h-12 shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Submit
                 </button>
             </div>
@@ -138,7 +171,7 @@
                     </select>
                 </div>
                 <div class="mb-4 mt-4">
-                    <button type="submit" class="inline-flex justify-center  w-32 h-12 shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <button type="submit" class="inline-flex justify-center items-center  w-32 h-12 shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         Submit
                     </button>
                 </div>

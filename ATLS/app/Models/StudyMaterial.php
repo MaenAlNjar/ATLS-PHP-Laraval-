@@ -12,6 +12,7 @@ class StudyMaterial extends Model
     protected $fillable = [
         'subject_name',
         'school_id',
+        'class_stage'
         // Add any other fields that you want to allow for mass assignment
     ];
     public function school()

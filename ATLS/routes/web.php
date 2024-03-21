@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use Illuminate\Support\Collection;
+
 use App\Models\User;
 use App\Models\School;
 use App\Models\StudyMaterial;
@@ -11,6 +13,7 @@ use App\Models\Schedule;
 
 use App\Http\Controllers\createController;
 use App\Http\Controllers\materialsController;
+use App\Http\Controllers\ScheduleController;
 
 Route::get('/', function () {
     View::share('title', 'ATLS');
@@ -69,7 +72,7 @@ Route::get('/manager/mainpage', function (){
         ->get();}
         $StudyMaterials =StudyMaterial::all(); 
         $class=Schedule::all();
-    return view('manager.main',compact('users','StudyMaterials'));});
+    return view('manager.main',compact('users'));});
 
 
 Route::post('/addMaterials', [materialsController::class, 'addMaterials'])->name('addMaterials');
@@ -90,6 +93,12 @@ Route::post('/addClass', [materialsController::class, 'addClass'])->name('addCla
 
 Route::delete('/Class/{id}/delete', [materialsController::class, 'destroyClass'])->name('destroyClass');
 
+Route::get('/Schedule/{id}/view', function ($id) {
+    View::share('title', 'ATLS');
+    $schedules = Schedule::where('class_id', $id)->get();
+    return view('manager.Schedule', compact('schedules'));
+})->name('ClassSchedule');
+
 Route::get('/view/{id}/class', function ($id) {
     View::share('title', 'ATLS');
     $classe = Classes::findOrFail($id);
@@ -102,21 +111,114 @@ return view('manager.view', compact('classe','users','StudyMaterials','StudentMa
 Route::get('/addUser', function () {
     View::share('title', 'ATLS');
     $users = User::where('school_id',Auth::user()->school_id)->get();
+    $userm = User::where('school_id',Auth::user()->school_id)
+    ->whereIn('role', ['teacher', 'manager'])
+    ->get();
+
     $classe = Classes::where('school_id', Auth::user()->school_id)->get();
     $StudyMaterials =StudyMaterial::all();
     $userz=User::where('class',0)->get(); 
-return view('manager.addUser', compact('classe','users','StudyMaterials','userz'));
+return view('manager.addUser', compact('classe','users','StudyMaterials','userz','userm'));
 });
 
 Route::post('/addMark',[materialsController::class,'addMark'])->name('addMark');
 
 Route::get('/StudentPage/{id}/view',function($id){
 View::share('title', 'ATLS');
-$user= User::where('id',$id)->get();
+$user= User::where('id',$id)->first();
 $marks=StudentMark::where('user_id',$id)->get();
 $StudyMaterials =StudyMaterial::all(); 
+
 return view('manager.studentPage', compact('user','marks','StudyMaterials'));})->name('StudentPage');
 
 Route::put('/users/{id}/change-class', [materialsController::class, 'changeClass'])->name('changeClass');
 
 Route::post('/update-user-class', [materialsController::class, 'updateUserClass'])->name('updateUserClass');
+
+Route::get('/viewteacher/{id}', function ($id) {
+    View::share('title', 'ATLS');
+    $user = User::findOrFail($id);
+    $classe = Classes::where('school_id', Auth::user()->school_id)->get()->sortBy('grade');
+    $schedules = Schedule::all();
+    return view('manager.viewTeacher', compact('user', 'classe','schedules'));
+})->name('viewTeacher');
+
+
+Route::post('/generate-schedules/{classStage}', [ScheduleController::class, 'generateSchedules'])->name('generateSchedules');
+
+Route::get('/Teachers', function (){
+    View::share('title', 'ATLS');
+    if(Auth::check()){
+        $users = User::where('school_id', Auth::user()->school_id)
+        ->where('role', 'teacher')
+        ->get();}
+        $StudyMaterials =StudyMaterial::all(); 
+        return view('manager.Teachers',compact('users','StudyMaterials'));
+});
+
+Route::get('/teacher/mainpage', function (){
+    View::share('title', 'ATLS');
+    if(Auth::check()){
+        $users = User::where('school_id', Auth::user()->school_id)
+        ->where('role', 'teacher')
+        ->get();}
+        
+return view('Teacher.main',compact('users'));});
+
+Route::get('/teacher/class', function (){
+        View::share('title', 'ATLS');
+        $classe = Classes::where('school_id', Auth::user()->school_id)->get()->sortBy('grade');
+        $user=User::where('id', Auth::user()->id)->first();   
+        $schedules = Schedule::all();
+        $StudyMaterials =StudyMaterial::all(); 
+
+return view('Teacher.class',compact('user','classe','schedules','StudyMaterials'));});
+
+Route::get('/teacher/schedule', function (){
+    View::share('title', 'ATLS');
+    $classe = Classes::where('school_id', Auth::user()->school_id)->get()->sortBy('grade');
+    $user=User::where('id', Auth::user()->id)->first();   
+    $schedules = Schedule::all();
+    $StudyMaterials =StudyMaterial::all(); 
+                
+return view('Teacher.schedule',compact('user','classe','schedules','StudyMaterials'));});
+
+Route::get('/student/mainpage', function (){
+    View::share('title', 'ATLS');
+    if(Auth::check()){
+        $users = User::where('school_id', Auth::user()->school_id)
+        ->where('role', 'teacher')
+        ->get();}
+        
+return view('Student.main',compact('users'));});
+
+Route::get('/student/class', function (){
+    View::share('title', 'ATLS');
+
+    // Assuming a user belongs to one class
+    $user = Auth::user();
+    $classe = Classes::where('id', $user->class)->first();
+
+    $users = User::where('class', $classe->id)->get();
+
+
+    return view('Student.class', compact('classe','users'));
+});
+
+
+Route::get('/student/schedule', function (){
+    View::share('title', 'ATLS');
+    $classe = Classes::where('school_id', Auth::user()->school_id)->get()->sortBy('grade');
+    $user=User::where('id', Auth::user()->id)->first();   
+    $schedules = Schedule::all();
+    $StudyMaterials =StudyMaterial::all(); 
+                
+return view('Student.schedule',compact('user','classe','schedules','StudyMaterials'));});
+
+Route::get('/classView/{id}/StudenMark', function ($id) {
+    View::share('title', 'ATLS');
+    $classe = Classes::where('id',$id)->get();
+    $StudyMaterials =StudyMaterial::all(); 
+    $StudentMarks=StudentMark::where('user_id',$id)->get();
+return view('Student.classView', compact('classe','StudyMaterials','StudentMarks'));
+})->name('StudentMark');

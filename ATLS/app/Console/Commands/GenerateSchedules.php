@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Schedule;
-use App\Models\Classes; // Update with your actual Classes model
-use App\Models\StudyMaterial; // Update with your actual StudyMaterial model
+use App\Models\Classes;
+use App\Models\StudyMaterial; 
 
 class GenerateSchedules extends Command
 {
@@ -18,34 +18,53 @@ class GenerateSchedules extends Command
         // Clear existing schedules
         Schedule::truncate();
 
-        // Number of lessons per day
-        $lessonsPerDay = [6, 6, 6, 6, 6, 5]; // 5 working days
+        // Define lesson time slots
+        $lessonTimeSlots = [
+            8,  
+            9,  
+            10, 
+            11, 
+            12, 
+            13, 
+            14, 
+            15, 
+        ];
 
         // Get all subjects
-        $subjects = StudyMaterial::all();
+        $subjects = StudyMaterial::where('class_stage','Primary education')->get();
 
         // Get all classes
-        $classes = Classes::all();
+        $classes = Classes::where('class_stage','Primary_education')->get();
 
         // Generate schedules for each class
         foreach ($classes as $class) {
             $classSchedule = [];
 
             // Generate schedules for each day
-            for ($day = 0; $day < count($lessonsPerDay); $day++) {
+            for ($day = 0; $day < 5; $day++) { 
                 $schedule = [];
 
-                // Generate lessons for each subject
-                foreach ($subjects as $subject) {
-                    // Generate lessons for this subject for the current day
-                    for ($i = 0; $i < $lessonsPerDay[$day]; $i++) {
-                        $time = rand(8, 16); // Random hour between 8 AM and 4 PM
-                        $lesson = [
-                            'time' => $time,
-                            'subject' => $subject->name, // Assign the subject name
-                        ];
-                        $schedule[] = $lesson;
+                // Shuffle the subjects to assign randomly
+                $shuffledSubjects = $subjects->shuffle();
+
+                // Assign lessons to time slots
+                foreach ($lessonTimeSlots as $timeSlot) {
+                    // Get the first subject from the shuffled list
+                    $lessonSubject = $shuffledSubjects->pop();
+
+                    // If there are no more subjects, shuffle the list again
+                    if (!$lessonSubject) {
+                        $shuffledSubjects = $subjects->shuffle();
+                        $lessonSubject = $shuffledSubjects->pop();
                     }
+
+                    // Create the lesson
+                    $lesson = [
+                        'time' => $timeSlot,
+                        'subject' => $lessonSubject->subject_name,
+                    ];
+
+                    $schedule[] = $lesson;
                 }
 
                 // Add the schedule for this day to the class schedule

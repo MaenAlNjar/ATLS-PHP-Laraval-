@@ -11,7 +11,7 @@ class Schedule extends Model
     protected $fillable = ['class_id', 'day'];
     public function Clase()
 {
-    return $this->belongsTo(Clase::class);
+    return $this->belongsTo(Classes::class ,'class_id');
 }
 
 public function studyMaterial()

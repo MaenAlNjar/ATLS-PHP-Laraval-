@@ -18,6 +18,23 @@
     <div class="bg-gray-200 px-4 py-2 rounded-lg">
         Add class       
         </div>
+        <div class="flex gap-10">
+            <form class="mt-10 mb-10" method="POST" action="{{ route('generateSchedules', 'Primary education') }}">
+                @csrf
+                <button type="submit" class="btn-indigo">Generate Schedules Primary</button>
+            </form>
+            <form class="mt-10 mb-10" method="POST" action="{{ route('generateSchedules', 'Secondary education') }}">
+                @csrf
+                <button type="submit" class="btn-indigo">Generate Schedules Secondary</button>
+            </form>
+            <form class="mt-10 mb-10" method="POST" action="{{ route('generateSchedules', 'High school') }}">
+                @csrf
+                <button type="submit" class="btn-indigo">Generate Schedules High School</button>
+            </form>
+        </div>
+    <div class="bg-gray-200 px-4 py-2 rounded-lg">
+        Add class       
+        </div>
         <form method="POST" action="{{ route('addClass') }}" class="flex gap-10">
             @csrf
         
@@ -39,6 +56,14 @@
                     <option value="3">3</option>
                     <option value="4">4</option>
                     <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+
                 </select>
             </div>
         
@@ -58,6 +83,7 @@
                     <tr>
                         <th class="border border-gray-300 px-4 py-2">Name</th>
                         <th class="border border-gray-300 px-4 py-2">Grade</th>
+                        <th class="border border-gray-300 px-4 py-2">levl</th>
                         <th class="border border-gray-300 px-4 py-2">Action</th>
                     </tr>
                 </thead>
@@ -66,8 +92,10 @@
                     <tr>
                         <td class="border border-gray-300 px-4 py-2">{{ $class->name }}</td>
                         <td class="border border-gray-300 px-4 py-2">{{ $class->grade }}</td>
-                        <td class="border border-gray-300  flex gap-10">
+                        <td class="border border-gray-300 px-4 py-2">{{ $class->class_stage }}</td>
+                        <td class="border border-gray-300  flex justify-center gap-10">
                             <a href="{{url('/view/'.$class->id.'/class')}}" class="border px-4 py-2 ">View</a>
+                            <a href="{{route('ClassSchedule',$class->id)}}" class="border px-4 py-2 ">Schedule</a>
 
                             <form  class="border px-4 py-2" method="POST" action="{{route('destroyClass',$class->id)}}">
                                 @csrf

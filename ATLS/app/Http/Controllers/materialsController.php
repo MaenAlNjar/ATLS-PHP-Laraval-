@@ -16,18 +16,26 @@ class materialsController extends Controller
     {
         $validatedData = $request->validate([
             'subject_name' => 'required|string|max:255',
-            'school_id' => 'required',    
+            'school_id' => 'required', 
+            'class_stage' => 'required'   
         ]);
-
-        StudyMaterial::create($validatedData);
-
-        return back()->with('success', 'StudyMaterial Add Successfully!');
+        
+        $nameExists = StudyMaterial::where('subject_name', $validatedData['subject_name'])
+        ->where('class_stage', $validatedData['class_stage'])
+        ->exists();        
+        if($nameExists){
+            return back()->with('error', 'Same name already exists');
+        } else {
+            StudyMaterial::create($validatedData);
+            return back()->with('success', 'StudyMaterial Added Successfully!');
+        }
     }
     public function updateSubject(Request $request)
     {
         $validatedData = $request->validate([
             'name' => 'required|string',
             'subject_name' => 'required|string',
+            'class_stage' => 'required'
             
         ]);
     
@@ -40,38 +48,70 @@ class materialsController extends Controller
     
         // Update the subject for the found user
         $user->subject = $validatedData['subject_name'];
+        $user->class_stage = $validatedData['class_stage']; 
+
         $user->save();
     
         return back()->with('success', 'Subject name updated successfully');
     }
-    public function addClass (Request $request)
+    public function addClass(Request $request)
     {
         $validatedData = $request->validate([
             'name' => 'required|string',
             'grade' => 'required',
-            'school_id'=>'required'
+            'school_id' => 'required',
         ]);
+    
+        $grade = $validatedData['grade'];
+    
+        // Define logic to categorize class_stage based on grade
+        $classStage = '';
+        if ($grade >= 1 && $grade <= 5) {
+            $classStage = 'Primary education';
+        } elseif ($grade >= 6 && $grade <= 8) {
+            $classStage = 'Secondary education';
+        } elseif ($grade >= 9 && $grade <= 12) {
+            $classStage = 'High school';
+        }
+    
+        // Check if the class already exists
         $existingClass = Classes::where('name', $validatedData['name'])
-        ->where('grade', $validatedData['grade'])
-        ->where('school_id', $validatedData['school_id'])
-        ->first();
-
+            ->where('grade', $validatedData['grade'])
+            ->where('school_id', $validatedData['school_id'])
+            ->first();
+    
         if ($existingClass) {
-          return back()->with('error', 'A class with the same name and grade already exists.');
-           }
+            return back()->with('error', 'A class with the same name and grade already exists.');
+        }
+    
+        // Add the class_stage to the validated data
+        $validatedData['class_stage'] = $classStage;
+    
+        // Create the class
         Classes::create($validatedData);
-        return back()->with('success', 'School created successfully!');
-
+    
+        return back()->with('success', 'Class created successfully!');
     }
     public function destroyClass($id)
      {
         $class = Classes::findOrFail($id);
+
+        $usersWithClass = User::where('class', $id)->get();
+    
+        foreach ($usersWithClass as $user) {
+            $user->class_id = 0;
+            $user->save();
+        }
+    
         $class->delete();
+    
         return back()->with('success', 'Class Deleted successfully!');
 
     }
     public function addMark(Request $request)
-    {try {
+    {
+
+        try {
         $validatedData = $request->validate([
             'user_id' => 'required|string|max:255',
             'mark_one' => 'nullable|numeric|min:0|max:40',

@@ -49,7 +49,6 @@
                 <form class="border px-4 py-2" method="POST" action="{{ route('changeClass', $user->id) }}">
                     @csrf
                     @method('PUT')
-                
                     <button type="submit">Delete</button>
                 </form>
             </td>

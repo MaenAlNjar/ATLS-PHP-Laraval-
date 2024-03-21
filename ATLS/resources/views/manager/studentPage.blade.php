@@ -20,7 +20,7 @@
 </div>
 @endif
 <div>
-  
+
    <div class="bg-gray-200 px-4 py-2 rounded-lg mt-10">
     Add Student       
     </div>
@@ -29,8 +29,8 @@
         @method('POST')
     
         <div class="mb-4">
-            <label for="user_id" class="block text-sm font-medium text-gray-700">{{$user->first()->name}}</label>
-            <input type="hidden" name="user_id" value="{{ $user->first()->id }}">
+            <label for="user_id" class="block text-sm font-medium text-gray-700">{{$user->name}}</label>
+            <input type="hidden" name="user_id" value="{{ $user->id }}">
 
         </div>
     
@@ -38,10 +38,18 @@
             <label for="study_materials_id" class="block text-sm font-medium text-gray-700">Study Material</label>
             <select id="study_materials_id" name="study_materials_id" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                 @foreach($StudyMaterials as $StudyMaterial)
-                    <option value="{{ $StudyMaterial->id }}">- {{ $StudyMaterial->subject_name }} -</option>
+                    @if(
+                        ($StudyMaterial->class_stage == $user->class_stage && $StudyMaterial->subject_name == Auth::user()->subject)
+                        || (Auth::user()->role == "manager")
+                    )
+                        <option value="{{ $StudyMaterial->id }}">
+                            {{ $StudyMaterial->subject_name }} - {{ $StudyMaterial->class_stage }}
+                        </option>
+                    @endif
                 @endforeach
             </select>
         </div>
+        
     
         <div class="mb-4">
             <label for="mark_one" class="block text-sm font-medium text-gray-700">Mark One</label>
@@ -78,11 +86,15 @@
     <tbody>
         @foreach($marks as $mark)
         <tr>
-            <td class="border border-gray-300 px-4 py-2">{{ $mark->studyMaterial->subject_name }}</td>
-            <td class="border border-gray-300 px-4 py-2">{{ $mark->mark_one }}</td>
+            <td class="border border-gray-300 px-4 py-2">
+                @if($mark->studyMaterial)
+                    {{ $mark->studyMaterial->subject_name }}
+                @else
+                    Study Material Not Available
+                @endif
+            </td>            <td class="border border-gray-300 px-4 py-2">{{ $mark->mark_one }}</td>
             <td class="border border-gray-300 px-4 py-2">{{ $mark->mark_two }}</td>
             <td class="border border-gray-300 px-4 py-2">{{ $mark->mark_final }}</td>
-            
         </tr>
     @endforeach
     </tbody>

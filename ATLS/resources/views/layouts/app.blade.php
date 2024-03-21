@@ -6,6 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>@yield('title', $title)</title>
     @vite('resources/css/app.css')
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
 </head>
 <body>
     
@@ -57,13 +59,14 @@
                     </div>
                 </div>
             </nav>
-            <div class="flex ">
-                <div class="w-1/5 p-5 border rounded-r-lg border-black h-100% ">
+            <div class="flex sidebar" >
+                <div class="w-1/5 p-5 border rounded-r-lg border-black sidebar ">
                     <p class="py-4 px-2 bg-amber-100">Welcome, {{ Auth::user()->name }}</p>           
               <ul class="mt-10">
-                <li><a href="/createClass" class="lg:p-4 py-2 block border-b-2 border-transparent hover:border-indigo-500">Create Class </a><li>
-                    <li><a href="/addUser" class="lg:p-4 py-2 block border-b-2 border-transparent hover:border-indigo-500">Add Student/Teacher</a><li>
-                        <li><a href="/" class="lg:p-4 py-2 block border-b-2 border-transparent hover:border-indigo-500">Mark </a><li>
+                <li><a href="/createClass" class="lg:p-4 py-2 block border-b-2 border-transparent hover:border-indigo-500">Class Setting </a><li>
+                <li><a href="/addUser" class="lg:p-4 py-2 block border-b-2 border-transparent hover:border-indigo-500">Add Student/Teacher</a><li>
+                <li><a href="/Teachers" class="lg:p-4 py-2 block border-b-2 border-transparent hover:border-indigo-500">Teacher</a><li>
+
 
               </ul>
                 </div>
@@ -75,7 +78,7 @@
                         <div class="hidden lg:flex lg:items-center lg:w-auto" id="menu">
                             <nav>
                                 <ul class="lg:flex items-center justify-between text-base text-gray-700 pt-4 lg:pt-0">
-                                    <li><a href="" class="lg:p-4 py-2 block border-b-2 border-transparent hover:border-indigo-500">All Posts</a></li>
+                                    <li><a href="/teacher/mainpage" class="lg:p-4 py-2 block border-b-2 border-transparent hover:border-indigo-500">Main page</a></li>
                                     <li class="lg:p-4 py-2 block border-b-2 border-transparent hover:border-indigo-500">
                                         <form action="{{ route('logout') }}" method="POST">
                                             @csrf
@@ -91,9 +94,10 @@
             <div class="flex">
                 <div class="w-1/5 p-5">
                     <p class="py-4 px-2 bg-amber-100">Welcome, {{ Auth::user()->name }}</p>           
-                    <div>
-                        <p>Logo or any other content</p>
-                    </div>
+                    <ul class="mt-10">
+                        <li><a href="/teacher/class" class="lg:p-4 py-2 block border-b-2 border-transparent hover:border-indigo-500">Class And Student</a><li>
+                        <li><a href="/teacher/schedule" class="lg:p-4 py-2 block border-b-2 border-transparent hover:border-indigo-500">Schedule</a><li>
+                      </ul>
                 </div>
         @elseif(Auth::user()->role === 'student')
             <nav class="bg-gray-100 shadow">
@@ -103,7 +107,7 @@
                         <div class="hidden lg:flex lg:items-center lg:w-auto" id="menu">
                             <nav>
                                 <ul class="lg:flex items-center justify-between text-base text-gray-700 pt-4 lg:pt-0">
-                                    <li><a href="" class="lg:p-4 py-2 block border-b-2 border-transparent hover:border-indigo-500">All Posts</a></li>
+                                    <li><a href="/student/mainpage" class="lg:p-4 py-2 block border-b-2 border-transparent hover:border-indigo-500">Main page</a></li>
                                     <li class="lg:p-4 py-2 block border-b-2 border-transparent hover:border-indigo-500">
                                         <form action="{{ route('logout') }}" method="POST">
                                             @csrf
@@ -118,9 +122,12 @@
             </nav>
             <div class="flex">
                 <div class="w-1/5 p-5">
-                    <p class="py-4 px-2 bg-amber-100">Welcome, {{ Auth::user()->name }}</p>           
+                    <p class="py-4 px-2 bg-amber-100">Welcome {{ Auth::user()->name }}</p>           
                     <div>
-                        <p>Logo or any other content</p>
+                        <ul class="mt-10">
+                            <li><a href="/student/class" class="lg:p-4 py-2 block border-b-2 border-transparent hover:border-indigo-500">Class</a><li>
+                            <li><a href="/student/schedule" class="lg:p-4 py-2 block border-b-2 border-transparent hover:border-indigo-500">Schedule</a><li>
+                          </ul>
                     </div>
                 </div>
         @endif

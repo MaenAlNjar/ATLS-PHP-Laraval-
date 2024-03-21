@@ -10,3 +10,9 @@
 .btn-indigo {
     @apply inline-flex justify-center w-32 h-12 shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
 }
+.sidebar {
+    height: 875px;
+    border-bottom: 1px solid transparent;
+    border-top: 1px solid transparent;
+
+}
